@@ -52,7 +52,8 @@ def process(subject):
     for fn in fns:
         covs = []   
         m = loadmat(dn+fn)
-        d = m['data']
+        key = filter(lambda x: x[0] != '_', m.keys())[0]
+        d = m[key]
         d = resample(d, 400, axis=1)
         if 'inter' in fn:
             l = 0
@@ -111,4 +112,4 @@ def process(subject):
 
 # Process all subjects in parallel
 # reduce n_jobs if out of memory
-r = joblib.Parallel(n_jobs=-1)(joblib.delayed(process)(n) for n in range(12))
+r = joblib.Parallel(n_jobs=-1)(joblib.delayed(process)(n) for n in range(7))
