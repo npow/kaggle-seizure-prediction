@@ -127,10 +127,11 @@ def load_mat_data(data_dir, target, component):
     i = 0
     while not done:
         i += 1
-        filename = '%s/%s_%s_segment_%d.mat' % (dir, target, component, i)
+        filename = '%s/%s_%s_segment_%04d.mat' % (dir, target, component, i)
         if os.path.exists(filename):
             data = scipy.io.loadmat(filename)
-            yield(data)
+            key = filter(lambda x: x[0] != '_', data.keys())[0]
+            yield(data[key][0][0])
         else:
             if i == 1:
                 raise Exception("file %s not found" % filename)
