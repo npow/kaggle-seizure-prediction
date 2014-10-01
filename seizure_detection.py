@@ -49,35 +49,35 @@ def run_seizure_detection(build_target):
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
-        # Pipeline(gen_ictal=False, pipeline=[FFT(), Slice(1, 48), Magnitude(), Log10()]),
-        # Pipeline(gen_ictal=False, pipeline=[FFT(), Slice(1, 64), Magnitude(), Log10()]),
-        # Pipeline(gen_ictal=False, pipeline=[FFT(), Slice(1, 96), Magnitude(), Log10()]),
-        # Pipeline(gen_ictal=False, pipeline=[FFT(), Slice(1, 128), Magnitude(), Log10()]),
-        # Pipeline(gen_ictal=False, pipeline=[FFT(), Slice(1, 160), Magnitude(), Log10()]),
-        # Pipeline(gen_ictal=False, pipeline=[FFT(), Magnitude(), Log10()]),
-        # Pipeline(gen_ictal=False, pipeline=[Stats()]),
-        # Pipeline(gen_ictal=False, pipeline=[DaubWaveletStats(4)]),
-        # Pipeline(gen_ictal=False, pipeline=[Resample(400), DaubWaveletStats(4)]),
-        # Pipeline(gen_ictal=False, pipeline=[Resample(400), MFCC()]),
-        # Pipeline(gen_ictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'us')]),
-        # Pipeline(gen_ictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'us')]),
-        Pipeline(gen_ictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # winning submission
-        # Pipeline(gen_ictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # higher score than winning submission
-        # Pipeline(gen_ictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'none')]),
-        # Pipeline(gen_ictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'none')]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeCorrelation(400, 'usf', with_corr=True, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeCorrelation(400, 'us', with_corr=True, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeCorrelation(400, 'us', with_corr=True, with_eigen=False)]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeCorrelation(400, 'us', with_corr=False, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeCorrelation(400, 'none', with_corr=True, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[FreqCorrelation(1, 48, 'usf', with_corr=True, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[FreqCorrelation(1, 48, 'us', with_corr=True, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[FreqCorrelation(1, 48, 'us', with_corr=True, with_eigen=False)]),
-        # Pipeline(gen_ictal=False, pipeline=[FreqCorrelation(1, 48, 'us', with_corr=False, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[FreqCorrelation(1, 48, 'none', with_corr=True, with_eigen=True)]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeFreqCorrelation(1, 48, 400, 'us')]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeFreqCorrelation(1, 48, 400, 'usf')]),
-        # Pipeline(gen_ictal=False, pipeline=[TimeFreqCorrelation(1, 48, 400, 'none')]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 48), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 64), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 96), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 128), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 160), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT(), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=False, pipeline=[Stats()]),
+        # Pipeline(gen_preictal=False, pipeline=[DaubWaveletStats(4)]),
+        # Pipeline(gen_preictal=False, pipeline=[Resample(400), DaubWaveletStats(4)]),
+        # Pipeline(gen_preictal=False, pipeline=[Resample(400), MFCC()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'us')]),
+        # Pipeline(gen_preictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'us')]),
+        Pipeline(gen_preictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # winning submission
+        # Pipeline(gen_preictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # higher score than winning submission
+        # Pipeline(gen_preictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'none')]),
+        # Pipeline(gen_preictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'none')]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeCorrelation(400, 'usf', with_corr=True, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeCorrelation(400, 'us', with_corr=True, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeCorrelation(400, 'us', with_corr=True, with_eigen=False)]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeCorrelation(400, 'us', with_corr=False, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeCorrelation(400, 'none', with_corr=True, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[FreqCorrelation(1, 48, 'usf', with_corr=True, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[FreqCorrelation(1, 48, 'us', with_corr=True, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[FreqCorrelation(1, 48, 'us', with_corr=True, with_eigen=False)]),
+        # Pipeline(gen_preictal=False, pipeline=[FreqCorrelation(1, 48, 'us', with_corr=False, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[FreqCorrelation(1, 48, 'none', with_corr=True, with_eigen=True)]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeFreqCorrelation(1, 48, 400, 'us')]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeFreqCorrelation(1, 48, 400, 'usf')]),
+        # Pipeline(gen_preictal=False, pipeline=[TimeFreqCorrelation(1, 48, 400, 'none')]),
     ]
     classifiers = [
         # NOTE(mike): you can enable multiple classifiers to run them all and compare results
@@ -103,7 +103,7 @@ def run_seizure_detection(build_target):
                     task_core = TaskCore(cached_data_loader=cached_data_loader, data_dir=data_dir,
                                          target=target, pipeline=pipeline,
                                          classifier_name=classifier_name, classifier=classifier,
-                                         normalize=should_normalize(classifier), gen_ictal=pipeline.gen_ictal,
+                                         normalize=should_normalize(classifier), gen_preictal=pipeline.gen_preictal,
                                          cv_ratio=cv_ratio)
 
                     if make_predictions:
@@ -139,7 +139,7 @@ def run_seizure_detection(build_target):
                     task_core = TaskCore(cached_data_loader=cached_data_loader, data_dir=data_dir,
                                          target=target, pipeline=pipeline,
                                          classifier_name=classifier_name, classifier=classifier,
-                                         normalize=should_normalize(classifier), gen_ictal=pipeline.gen_ictal,
+                                         normalize=should_normalize(classifier), gen_preictal=pipeline.gen_preictal,
                                          cv_ratio=cv_ratio)
 
                     data = CrossValidationScoreTask(task_core).run()
