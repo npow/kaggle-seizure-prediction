@@ -7,7 +7,7 @@ from sklearn import cross_validation, preprocessing
 from sklearn.metrics import roc_curve, auc
 
 TaskCore = namedtuple('TaskCore', ['cached_data_loader', 'data_dir', 'target', 'pipeline', 'classifier_name',
-                                   'classifier', 'normalize', 'gen_ictal', 'cv_ratio'])
+                                   'classifier', 'normalize', 'gen_preictal', 'cv_ratio'])
 
 class Task(object):
     """
@@ -25,17 +25,17 @@ class Task(object):
         return self.task_core.cached_data_loader.load(self.filename(), self.load_data)
 
 
-class LoadIctalDataTask(Task):
+class LoadPreictalDataTask(Task):
     """
-    Load the ictal mat files 1 by 1, transform each 1-second segment through the pipeline
-    and return data in the format {'X': X, 'Y': y, 'latencies': latencies}
+    Load the preictal mat files 1 by 1, transform each 1-second segment through the pipeline
+    and return data in the format {'X': X, 'Y': y}
     """
     def filename(self):
-        return 'data_ictal_%s_%s' % (self.task_core.target, self.task_core.pipeline.get_name())
+        return 'data_preictal_%s_%s' % (self.task_core.target, self.task_core.pipeline.get_name())
 
     def load_data(self):
-        return parse_input_data(self.task_core.data_dir, self.task_core.target, 'ictal', self.task_core.pipeline,
-                           self.task_core.gen_ictal)
+        return parse_input_data(self.task_core.data_dir, self.task_core.target, 'preictal', self.task_core.pipeline,
+                           self.task_core.gen_preictal)
 
 
 class LoadInterictalDataTask(Task):
@@ -64,15 +64,15 @@ class LoadTestDataTask(Task):
 
 class TrainingDataTask(Task):
     """
-    Creating a training set and cross-validation set from the transformed ictal and interictal data.
+    Creating a training set and cross-validation set from the transformed preictal and interictal data.
     """
     def filename(self):
         return None  # not cached, should be fast enough to not need caching
 
     def load_data(self):
-        ictal_data = LoadIctalDataTask(self.task_core).run()
+        preictal_data = LoadPreictalDataTask(self.task_core).run()
         interictal_data = LoadInterictalDataTask(self.task_core).run()
-        return prepare_training_data(ictal_data, interictal_data, self.task_core.cv_ratio)
+        return prepare_training_data(preictal_data, interictal_data, self.task_core.cv_ratio)
 
 
 class CrossValidationScoreTask(Task):
@@ -120,19 +120,6 @@ class MakePredictionsTask(Task):
 
         return make_predictions(self.task_core.target, X_test, y_classes, classifier_data)
 
-# a list of pairs indicating the slices of the data containing full seizures
-# e.g. [(0, 5), (6, 10)] indicates two ranges of seizures
-def seizure_ranges_for_latencies(latencies):
-    indices = np.where(latencies == 0)[0]
-
-    ranges = []
-    for i in range(1, len(indices)):
-        ranges.append((indices[i-1], indices[i]))
-    ranges.append((indices[-1], len(latencies)))
-
-    return ranges
-
-
 #generator to iterate over competition mat data
 def load_mat_data(data_dir, target, component):
     dir = os.path.join(data_dir, target)
@@ -151,57 +138,28 @@ def load_mat_data(data_dir, target, component):
 
 
 # process all of one type of the competition mat data
-# data_type is one of ('ictal', 'interictal', 'test')
-def parse_input_data(data_dir, target, data_type, pipeline, gen_ictal=False):
-    ictal = data_type == 'ictal'
+# data_type is one of ('preictal', 'interictal', 'test')
+def parse_input_data(data_dir, target, data_type, pipeline, gen_preictal=False):
+    preictal = data_type == 'preictal'
     interictal = data_type == 'interictal'
 
     mat_data = load_mat_data(data_dir, target, data_type)
 
-    # for each data point in ictal, interictal and test,
-    # generate (X, <y>, <latency>) per channel
-    def process_raw_data(mat_data, with_latency):
+    # for each data point in preictal, interictal and test,
+    # generate (X, <y>) per channel
+    def process_raw_data(mat_data):
         start = time.get_seconds()
         print 'Loading data',
         X = []
         y = []
-        latencies = []
 
         prev_data = None
-        prev_latency = None
         for segment in mat_data:
             data = segment['data']
             transformed_data = pipeline.apply(data)
 
-            if with_latency:
-                # this is ictal
-                latency = segment['latency'][0]
-                if latency <= 15:
-                    y_value = 0 # ictal <= 15
-                else:
-                    y_value = 1 # ictal > 15
-
-                # generate extra ictal training data by taking 2nd half of previous
-                # 1-second segment and first half of current segment
-                # 0.5-1.5, 1.5-2.5, ..., 13.5-14.5, ..., 15.5-16.5
-                # cannot take half of 15 and half of 16 because it cannot be strictly labelled as early or late
-                if gen_ictal and prev_data is not None and prev_latency + 1 == latency and prev_latency != 15:
-                    # gen new data :)
-                    axis = prev_data.ndim - 1
-                    def split(d):
-                        return np.split(d, 2, axis=axis)
-                    new_data = np.concatenate((split(prev_data)[1], split(data)[0]), axis=axis)
-                    X.append(pipeline.apply(new_data))
-                    y.append(y_value)
-                    latencies.append(latency - 0.5)
-
-                y.append(y_value)
-                latencies.append(latency)
-
-                prev_latency = latency
-            elif y is not None:
-                # this is interictal
-                y.append(2)
+            ### WTF IS THIS?
+            y.append(2)
 
             X.append(transformed_data)
             prev_data = data
@@ -210,11 +168,10 @@ def parse_input_data(data_dir, target, data_type, pipeline, gen_ictal=False):
 
         X = np.array(X)
         y = np.array(y)
-        latencies = np.array(latencies)
 
-        if ictal:
-            print 'X', X.shape, 'y', y.shape, 'latencies', latencies.shape
-            return X, y, latencies
+        if preictal:
+            print 'X', X.shape, 'y', y.shape
+            return X, y
         elif interictal:
             print 'X', X.shape, 'y', y.shape
             return X, y
@@ -222,16 +179,9 @@ def parse_input_data(data_dir, target, data_type, pipeline, gen_ictal=False):
             print 'X', X.shape
             return X
 
-    data = process_raw_data(mat_data, with_latency=ictal)
+    data = process_raw_data(mat_data)
 
-    if len(data) == 3:
-        X, y, latencies = data
-        return {
-            'X': X,
-            'y': y,
-            'latencies': latencies
-        }
-    elif len(data) == 2:
+    if len(data) == 2:
         X, y = data
         return {
             'X': X,
@@ -252,23 +202,23 @@ def flatten(data):
         return data
 
 
-# split up ictal and interictal data into training set and cross-validation set
+# split up preictal and interictal data into training set and cross-validation set
 def prepare_training_data(ictal_data, interictal_data, cv_ratio):
     print 'Preparing training data ...',
-    ictal_X, ictal_y = flatten(ictal_data.X), ictal_data.y
+    preictal_X, preictal_y = flatten(preictal_data.X), preictal_data.y
     interictal_X, interictal_y = flatten(interictal_data.X), interictal_data.y
 
     # split up data into training set and cross-validation set for both seizure and early sets
-    ictal_X_train, ictal_y_train, ictal_X_cv, ictal_y_cv = split_train_ictal(ictal_X, ictal_y, ictal_data.latencies, cv_ratio)
+    preictal_X_train, preictal_y_train, preictal_X_cv, preictal_y_cv = train_test_split(ictal_X, ictal_y, cv_ratio)
     interictal_X_train, interictal_y_train, interictal_X_cv, interictal_y_cv = split_train_random(interictal_X, interictal_y, cv_ratio)
 
     def concat(a, b):
         return np.concatenate((a, b), axis=0)
 
-    X_train = concat(ictal_X_train, interictal_X_train)
-    y_train = concat(ictal_y_train, interictal_y_train)
-    X_cv = concat(ictal_X_cv, interictal_X_cv)
-    y_cv = concat(ictal_y_cv, interictal_y_cv)
+    X_train = concat(preictal_X_train, interictal_X_train)
+    y_train = concat(preictal_y_train, interictal_y_train)
+    X_cv = concat(preictal_X_cv, interictal_X_cv)
+    y_cv = concat(preictal_y_cv, interictal_y_cv)
 
     y_classes = np.unique(concat(y_train, y_cv))
 
@@ -295,58 +245,6 @@ def prepare_training_data(ictal_data, interictal_data, cv_ratio):
 def split_train_random(X, y, cv_ratio):
     X_train, X_cv, y_train, y_cv = cross_validation.train_test_split(X, y, test_size=cv_ratio, random_state=0)
     return X_train, y_train, X_cv, y_cv
-
-
-# split ictal segments for training and cross-validation by taking whole seizures at a time
-def split_train_ictal(X, y, latencies, cv_ratio):
-    seizure_ranges = seizure_ranges_for_latencies(latencies)
-    seizure_durations = [r[1] - r[0] for r in seizure_ranges]
-
-    num_seizures = len(seizure_ranges)
-    num_cv_seizures = int(max(1.0, num_seizures * cv_ratio))
-
-    # sort seizures by biggest duration first, then take the middle chunk for cross-validation
-    # and take the left and right chunks for training
-    tagged_durations = zip(range(len(seizure_durations)), seizure_durations)
-    tagged_durations.sort(cmp=lambda x,y: cmp(y[1], x[1]))
-    middle = num_seizures / 2
-    half_cv_seizures = num_cv_seizures / 2
-    start = middle - half_cv_seizures
-    end = start + num_cv_seizures
-
-    chosen = tagged_durations[start:end]
-    chosen.sort(cmp=lambda x,y: cmp(x[0], y[0]))
-    cv_ranges = [seizure_ranges[r[0]] for r in chosen]
-
-    train_ranges = []
-    prev_end = 0
-    for start, end in cv_ranges:
-        train_start = prev_end
-        train_end = start
-
-        if train_start != train_end:
-            train_ranges.append((train_start, train_end))
-
-        prev_end = end
-
-    train_start = prev_end
-    train_end = len(latencies)
-    if train_start != train_end:
-        train_ranges.append((train_start, train_end))
-
-    X_train_chunks = [X[start:end] for start, end in train_ranges]
-    y_train_chunks = [y[start:end] for start, end in train_ranges]
-
-    X_cv_chunks = [X[start:end] for start, end in cv_ranges]
-    y_cv_chunks = [y[start:end] for start, end in cv_ranges]
-
-    X_train = np.concatenate(X_train_chunks)
-    y_train = np.concatenate(y_train_chunks)
-    X_cv = np.concatenate(X_cv_chunks)
-    y_cv = np.concatenate(y_cv_chunks)
-
-    return X_train, y_train, X_cv, y_cv
-
 
 # train classifier for cross-validation
 def train(classifier, X_train, y_train, X_cv, y_cv, y_classes):
@@ -413,27 +311,7 @@ def train_classifier(classifier, data, use_all_data=False, normalize=False):
 
 # convert the output of classifier predictions into (Seizure, Early) pair
 def translate_prediction(prediction, y_classes):
-    if len(prediction) == 3:
-        # S is 1.0 when ictal <=15 or >15
-        # S is 0.0 when interictal is highest
-        ictalLTE15, ictalGT15, interictal = prediction
-        S = ictalLTE15 + ictalGT15
-        E = ictalLTE15
-        return S, E
-    elif len(prediction) == 2:
-        # 1.0 doesn't exist for Patient_4, i.e. there is no late seizure data
-        if not np.any(y_classes == 1.0):
-            ictalLTE15, interictal = prediction
-            S = ictalLTE15
-            E = ictalLTE15
-            # y[i] = 0 # ictal <= 15
-            # y[i] = 1 # ictal > 15
-            # y[i] = 2 # interictal
-            return S, E
-        else:
-            raise NotImplementedError()
-    else:
-        raise NotImplementedError()
+  raise NotImplementedError()
 
 
 # use the classifier and make predictions on the test data

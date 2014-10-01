@@ -43,14 +43,9 @@ def run_seizure_detection(build_target):
         'Dog_2',
         'Dog_3',
         'Dog_4',
+        'Dog_5',
         'Patient_1',
-        'Patient_2',
-        'Patient_3',
-        'Patient_4',
-        'Patient_5',
-        'Patient_6',
-        'Patient_7',
-        'Patient_8'
+        'Patient_2'
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
