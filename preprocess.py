@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import os, sys, pickle, itertools
+from math import *
+from numpy import *
 from scipy.io import loadmat
 from scipy.signal import resample, butter, lfilter
 
