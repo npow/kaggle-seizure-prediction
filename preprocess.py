@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
 import os, sys, pickle, itertools
-
-import joblib
-
 from scipy.io import loadmat
 from scipy.signal import resample, butter, lfilter
 
+from sklearn.externals import joblib
 import sklearn.linear_model
 import sklearn.cross_validation
 import sklearn.metrics
