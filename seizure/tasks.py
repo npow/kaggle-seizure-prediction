@@ -206,14 +206,14 @@ def flatten(data):
 
 
 # split up preictal and interictal data into training set and cross-validation set
-def prepare_training_data(ictal_data, interictal_data, cv_ratio):
+def prepare_training_data(preictal_data, interictal_data, cv_ratio):
     print 'Preparing training data ...',
     preictal_X, preictal_y = flatten(preictal_data.X), preictal_data.y
     interictal_X, interictal_y = flatten(interictal_data.X), interictal_data.y
 
     # split up data into training set and cross-validation set for both seizure and early sets
-    preictal_X_train, preictal_y_train, preictal_X_cv, preictal_y_cv = train_test_split(ictal_X, ictal_y, cv_ratio)
-    interictal_X_train, interictal_y_train, interictal_X_cv, interictal_y_cv = split_train_random(interictal_X, interictal_y, cv_ratio)
+    preictal_X_train, preictal_X_cv, preictal_y_train, preictal_y_cv = cross_validation.train_test_split(preictal_X, preictal_y, test_size=cv_ratio)
+    interictal_X_train, interictal_X_cv, interictal_y_train, interictal_y_cv = cross_validation.train_test_split(interictal_X, interictal_y, test_size=cv_ratio, random_state=0)
 
     def concat(a, b):
         return np.concatenate((a, b), axis=0)
@@ -242,12 +242,6 @@ def prepare_training_data(ictal_data, interictal_data, cv_ratio):
         'y_cv': y_cv,
         'y_classes': y_classes
     }
-
-
-# split interictal segments at random for training and cross-validation
-def split_train_random(X, y, cv_ratio):
-    X_train, X_cv, y_train, y_cv = cross_validation.train_test_split(X, y, test_size=cv_ratio, random_state=0)
-    return X_train, y_train, X_cv, y_cv
 
 # train classifier for cross-validation
 def train(classifier, X_train, y_train, X_cv, y_cv, y_classes):
