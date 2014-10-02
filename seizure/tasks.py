@@ -251,12 +251,11 @@ def train(classifier, X_train, y_train, X_cv, y_cv, y_classes):
     start = time.get_seconds()
     classifier.fit(X_train, y_train)
     print "Scoring..."
-    S, E = score_classifier_auc(classifier, X_cv, y_cv, y_classes)
-    score = 0.5 * (S + E)
+    score = score_classifier_auc(classifier, X_cv, y_cv, y_classes)
 
     elapsedSecs = time.get_seconds() - start
     print "t=%ds score=%f" % (int(elapsedSecs), score)
-    return score, S, E
+    return score
 
 
 # train classifier for predictions
@@ -292,12 +291,10 @@ def train_classifier(classifier, data, use_all_data=False, normalize=False):
         X_train, X_cv = normalize_data(X_train, X_cv)
 
     if not use_all_data:
-        score, S, E = train(classifier, X_train, y_train, X_cv, y_cv, data.y_classes)
+        score = train(classifier, X_train, y_train, X_cv, y_cv, data.y_classes)
         return {
             'classifier': classifier,
-            'score': score,
-            'S_auc': S,
-            'E_auc': E
+            'score': score
         }
     else:
         train_all_data(classifier, X_train, y_train, X_cv, y_cv)
@@ -305,22 +302,15 @@ def train_classifier(classifier, data, use_all_data=False, normalize=False):
             'classifier': classifier
         }
 
-
-# convert the output of classifier predictions into (Seizure, Early) pair
-def translate_prediction(prediction, y_classes):
-  raise NotImplementedError()
-
-
 # use the classifier and make predictions on the test data
 def make_predictions(target, X_test, y_classes, classifier_data):
     classifier = classifier_data.classifier
-    predictions_proba = classifier.predict_proba(X_test)
+    predictions= classifier.predict(X_test)
 
     lines = []
-    for i in range(len(predictions_proba)):
-        p = predictions_proba[i]
-        S, E = translate_prediction(p, y_classes)
-        lines.append('%s_test_segment_%d.mat,%.15f,%.15f' % (target, i+1, S, E))
+    for i in range(len(predictions)):
+        p = predictions[i]
+        lines.append('%s_test_segment_%04d.mat,%id' % (target, i+1, p))
 
     return {
         'data': '\n'.join(lines)
@@ -329,22 +319,8 @@ def make_predictions(target, X_test, y_classes, classifier_data):
 
 # the scoring mechanism used by the competition leaderboard
 def score_classifier_auc(classifier, X_cv, y_cv, y_classes):
-    predictions = classifier.predict_proba(X_cv)
-    S_predictions = []
-    E_predictions = []
-    S_y_cv = [1.0 if (x == 0.0 or x == 1.0) else 0.0 for x in y_cv]
-    E_y_cv = [1.0 if x == 0.0 else 0.0 for x in y_cv]
-
-    for i in range(len(predictions)):
-        p = predictions[i]
-        S, E = translate_prediction(p, y_classes)
-        S_predictions.append(S)
-        E_predictions.append(E)
-
-    fpr, tpr, thresholds = roc_curve(S_y_cv, S_predictions)
-    S_roc_auc = auc(fpr, tpr)
-    fpr, tpr, thresholds = roc_curve(E_y_cv, E_predictions)
-    E_roc_auc = auc(fpr, tpr)
-
-    return S_roc_auc, E_roc_auc
+    predictions = classifier.predict(X_cv)
+    fpr, tpr, thresholds = roc_curve(y_cv, predictions)
+    roc_auc = auc(fpr, tpr)
+    return roc_auc
 

@@ -131,8 +131,6 @@ def run_seizure_detection(build_target):
             for (classifier, classifier_name) in classifiers:
                 print 'Using pipeline %s with classifier %s' % (pipeline.get_name(), classifier_name)
                 scores = []
-                S_scores = []
-                E_scores = []
                 for target in targets:
                     print 'Processing %s (classifier %s)' % (target, classifier_name)
 
@@ -147,23 +145,13 @@ def run_seizure_detection(build_target):
 
                     scores.append(score)
 
-                    print '%.3f' % score, 'S=%.4f' % data.S_auc, 'E=%.4f' % data.E_auc
-                    S_scores.append(data.S_auc)
-                    E_scores.append(data.E_auc)
+                    print '%.3f' % score
 
                 if len(scores) > 0:
                     name = pipeline.get_name() + '_' + classifier_name
                     summary = get_score_summary(name, scores)
                     summaries.append((summary, np.mean(scores)))
                     print summary
-                if len(S_scores) > 0:
-                    name = pipeline.get_name() + '_' + classifier_name
-                    summary = get_score_summary(name, S_scores)
-                    print 'S', summary
-                if len(E_scores) > 0:
-                    name = pipeline.get_name() + '_' + classifier_name
-                    summary = get_score_summary(name, E_scores)
-                    print 'E', summary
 
             print_results(summaries)
 
