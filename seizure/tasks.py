@@ -131,7 +131,8 @@ def load_mat_data(data_dir, target, component):
         print "Loading: %s" % filename
         if os.path.exists(filename):
             data = scipy.io.loadmat(filename)
-            key = filter(lambda x: x[0] != '_', data.keys())[0]
+#            key = filter(lambda x: x[0] != '_', data.keys())[0]
+            key = data.keys()[0]
             yield(data[key][0][0])
         else:
             if i == 1:
