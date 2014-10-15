@@ -39,13 +39,7 @@ def run_seizure_detection(build_target):
     ts = time.get_millis()
 
     targets = [
-        'Dog_1',
-        'Dog_2',
-        'Dog_3',
-        'Dog_4',
-        'Dog_5',
-        'Patient_1',
-        'Patient_2'
+        'Dog_5'
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results

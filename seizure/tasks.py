@@ -131,8 +131,7 @@ def load_mat_data(data_dir, target, component):
         print "Loading: %s" % filename
         if os.path.exists(filename):
             data = scipy.io.loadmat(filename)
-#            key = filter(lambda x: x[0] != '_', data.keys())[0]
-            key = data.keys()[0]
+            key = filter(lambda x: x[0] != '_', data.keys())[0]
             yield(data[key][0][0])
         else:
             if i == 1:
@@ -155,18 +154,25 @@ def parse_input_data(data_dir, target, data_type, pipeline, gen_preictal=False):
         print 'Loading data',
         X = []
         y = []
+        prev_data = None
 
         for segment in mat_data:
             data = segment['data']
+            yvalue = 1 if preictal else 0
             transformed_data = pipeline.apply(data)
 
-            ### TODO: DOUBLE CHECK THIS
-            if preictal:
-              y.append(1)
-            elif interictal:
-              y.append(0)
+            if gen_preictal and prev_data is not None:
+              axis = prev_data.ndim - 1
+              def split(d):
+                return np.split(d, 2, axis=axis)
+              new_data = np.concatenate((split(prev_data)[1], split(data)[0]), axis=axis)
+              transformed_new_data = pipeline.apply(new_data)
+              X.append(transformed_new_data)
+              y.append(yvalue)
 
             X.append(transformed_data)
+            y.append(yvalue)
+            prev_data = data
 
         print '(%ds)' % (time.get_seconds() - start)
 
