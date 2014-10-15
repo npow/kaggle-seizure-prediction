@@ -48,6 +48,7 @@ def run_seizure_detection(build_target):
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 96), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 128), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 160), Magnitude(), Log10()]),
+        Pipeline(gen_preictal=False, pipeline=[FFT()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[Stats()]),
         # Pipeline(gen_preictal=False, pipeline=[DaubWaveletStats(4)]),
@@ -55,7 +56,7 @@ def run_seizure_detection(build_target):
         # Pipeline(gen_preictal=False, pipeline=[Resample(400), MFCC()]),
         # Pipeline(gen_preictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'us')]),
         # Pipeline(gen_preictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'us')]),
-        Pipeline(gen_preictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # winning submission
+        # Pipeline(gen_preictal=True, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # winning submission
         # Pipeline(gen_preictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'usf')]), # higher score than winning submission
         # Pipeline(gen_preictal=False, pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'none')]),
         # Pipeline(gen_preictal=True,  pipeline=[FFTWithTimeFreqCorrelation(1, 48, 400, 'none')]),
@@ -91,7 +92,7 @@ def run_seizure_detection(build_target):
         for pipeline in pipelines:
             for (classifier, classifier_name) in classifiers:
                 print 'Using pipeline %s with classifier %s' % (pipeline.get_name(), classifier_name)
-                guesses = ['clip,seizure,early']
+                guesses = ['clip,preictal']
                 classifier_filenames = []
                 for target in targets:
                     task_core = TaskCore(cached_data_loader=cached_data_loader, data_dir=data_dir,
