@@ -312,12 +312,12 @@ def train_classifier(classifier, data, use_all_data=False, normalize=False):
 # use the classifier and make predictions on the test data
 def make_predictions(target, X_test, y_classes, classifier_data):
     classifier = classifier_data.classifier
-    predictions= classifier.predict(X_test)
+    predictions= classifier.predict_proba(X_test)
 
     lines = []
     for i in range(len(predictions)):
-        p = predictions[i]
-        lines.append('%s_test_segment_%04d.mat,%i' % (target, i+1, p))
+        p = predictions[i][1]
+        lines.append('%s_test_segment_%04d.mat,%f' % (target, i+1, p))
 
     return {
         'data': '\n'.join(lines)
