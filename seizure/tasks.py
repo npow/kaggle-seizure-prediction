@@ -317,7 +317,7 @@ def make_predictions(target, X_test, y_classes, classifier_data):
     lines = []
     for i in range(len(predictions)):
         p = predictions[i]
-        lines.append('%s_test_segment_%04d.mat,%id' % (target, i+1, p))
+        lines.append('%s_test_segment_%04d.mat,%i' % (target, i+1, p))
 
     return {
         'data': '\n'.join(lines)
