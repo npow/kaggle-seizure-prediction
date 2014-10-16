@@ -45,7 +45,7 @@ def run_seizure_detection(build_target):
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
         # Pipeline(gen_preictal=True, pipeline=[FFT(), Slice(1, 48), Magnitude(), Log10()]),
-        Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance()]),
+        Pipeline(gen_preictal=False, pipeline=[CorrelationWithVariance()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 64), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 96), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 128), Magnitude(), Log10()]),
@@ -83,7 +83,16 @@ def run_seizure_detection(build_target):
         # (RandomForestClassifier(n_estimators=300, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf300mss1Bfrs0'),
         # (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
         # (RandomForestClassifier(n_estimators=5, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5mss1Bfrs0'),
-        (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0')
+        # (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0')
+        (RandomForestClassifier(n_estimators=1000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf1000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=2000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf2000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=4000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf4000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=5000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=6000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf6000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=7000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf7000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=8000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf8000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=9000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf9000mss1Bfrs0')
     ]
     cv_ratio = 0.5
 
