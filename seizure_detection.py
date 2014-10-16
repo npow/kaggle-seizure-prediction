@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, ExtraTr
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
 def run_seizure_detection(build_target):
@@ -92,7 +92,23 @@ def run_seizure_detection(build_target):
         (RandomForestClassifier(n_estimators=6000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf6000mss1Bfrs0'),
         (RandomForestClassifier(n_estimators=7000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf7000mss1Bfrs0'),
         (RandomForestClassifier(n_estimators=8000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf8000mss1Bfrs0'),
-        (RandomForestClassifier(n_estimators=9000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf9000mss1Bfrs0')
+        (RandomForestClassifier(n_estimators=9000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf9000mss1Bfrs0'),
+        (SGDClassifier(), 'sgd'),
+        (SVC(), 'svc'),
+        (LinearSVC(C=0.1), 'linearsvc_c1'),
+        (LinearSVC(C=1), 'linearsvc_c0.1'),
+        (LinearSVC(C=10), 'linearsvc_c10'),
+        (LinearSVC(C=100), 'linearsvc_c100'),
+        (LinearSVC(C=1000), 'linearsvc_c1000'),
+        (LinearSVC(C=10000), 'linearsvc_c10000'),
+        (LinearSVC(C=100000), 'linearsvc_c100000'),
+        (LinearSVC(C=0.1, class_weight='auto'), 'linearsvc_c1_cw'),
+        (LinearSVC(C=1, class_weight='auto'), 'linearsvc_c0.1_cw'),
+        (LinearSVC(C=10, class_weight='auto'), 'linearsvc_c10_cw'),
+        (LinearSVC(C=100, class_weight='auto'), 'linearsvc_c100_cw'),
+        (LinearSVC(C=1000, class_weight='auto'), 'linearsvc_c1000_cw'),
+        (LinearSVC(C=10000, class_weight='auto'), 'linearsvc_c10000_cw'),
+        (LinearSVC(C=100000, class_weight='auto'), 'linearsvc_c100000_cw'),
     ]
     cv_ratio = 0.5
 
