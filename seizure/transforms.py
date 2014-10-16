@@ -1,7 +1,10 @@
 import numpy as np
+import scipy
 from scipy import signal
 from scipy.signal import resample, hann
+from scipy.sparse import hstack
 from sklearn import preprocessing
+from sklearn.decomposition import FastICA
 
 # optional modules for trying out different transforms
 try:
@@ -17,6 +20,14 @@ except ImportError, e:
 
 # NOTE(mike): All transforms take in data of the shape (NUM_CHANNELS, NUM_FEATURES)
 # Although some have been written work on the last axis and may work on any-dimension data.
+
+class VarianceMatrix:
+  def get_name(self):
+    return "var-mat"
+  
+  def apply(self, data):
+    axis = data.ndim - 1
+    return np.var(data, axis=axis)
 
 
 class FFT:
@@ -535,3 +546,13 @@ class FFTWithTimeFreqCorrelation:
         data2 = FreqCorrelation(self.start, self.end, self.scale_option, with_fft=True).apply(data)
         assert data1.ndim == data2.ndim
         return np.concatenate((data1, data2), axis=data1.ndim-1)
+
+
+class CorrelationWithVariance:
+    def get_name(self):
+        return 'corr-with-variance'
+
+    def apply(self, data):
+        data1 = CorrelationMatrix().apply(data)
+        data2 = VarianceMatrix().apply(data)
+        return np.column_stack((data1, data2))

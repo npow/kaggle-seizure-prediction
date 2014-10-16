@@ -4,8 +4,7 @@ import numpy as np
 from common import time
 from common.data import CachedDataLoader, makedirs
 from common.pipeline import Pipeline
-from seizure.transforms import FFT, Slice, Magnitude, Log10, FFTWithTimeFreqCorrelation, MFCC, Resample, Stats, \
-    DaubWaveletStats, TimeCorrelation, FreqCorrelation, TimeFreqCorrelation
+from seizure.transforms import *
 from seizure.tasks import TaskCore, CrossValidationScoreTask, MakePredictionsTask, TrainClassifierTask
 from seizure.scores import get_score_summary, print_results
 
@@ -39,16 +38,19 @@ def run_seizure_detection(build_target):
     ts = time.get_millis()
 
     targets = [
+        'Dog_1',
+        'Dog_2',
         'Dog_5'
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
-        # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 48), Magnitude(), Log10()]),
+        # Pipeline(gen_preictal=True, pipeline=[FFT(), Slice(1, 48), Magnitude(), Log10()]),
+        Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 64), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 96), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 128), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Slice(1, 160), Magnitude(), Log10()]),
-        Pipeline(gen_preictal=False, pipeline=[FFT()]),
+        # Pipeline(gen_preictal=False, pipeline=[FFT()]),
         # Pipeline(gen_preictal=False, pipeline=[FFT(), Magnitude(), Log10()]),
         # Pipeline(gen_preictal=False, pipeline=[Stats()]),
         # Pipeline(gen_preictal=False, pipeline=[DaubWaveletStats(4)]),
@@ -79,8 +81,9 @@ def run_seizure_detection(build_target):
         # (RandomForestClassifier(n_estimators=50, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf50mss1Bfrs0'),
         # (RandomForestClassifier(n_estimators=150, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf150mss1Bfrs0'),
         # (RandomForestClassifier(n_estimators=300, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf300mss1Bfrs0'),
-        #(RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
-        (RandomForestClassifier(n_estimators=5, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5mss1Bfrs0')
+        # (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
+        # (RandomForestClassifier(n_estimators=5, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0')
     ]
     cv_ratio = 0.5
 
