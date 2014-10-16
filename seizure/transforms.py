@@ -555,4 +555,6 @@ class CorrelationWithVariance:
     def apply(self, data):
         data1 = CorrelationMatrix().apply(data)
         data2 = VarianceMatrix().apply(data)
-        return np.column_stack((data1, data2))
+        data2 = data2.reshape((data2.shape[0], 1))
+
+        return np.hstack((data1, data2))
