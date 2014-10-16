@@ -1,3 +1,5 @@
+import itertools
+import math
 import numpy as np
 import scipy
 from scipy import signal
@@ -5,6 +7,7 @@ from scipy.signal import resample, hann
 from scipy.sparse import hstack
 from sklearn import preprocessing
 from sklearn.decomposition import FastICA
+import timeit
 
 # optional modules for trying out different transforms
 try:
@@ -549,12 +552,57 @@ class FFTWithTimeFreqCorrelation:
 
 
 class CorrelationWithVariance:
-    def get_name(self):
-        return 'corr-with-variance'
+  def get_name(self):
+    return 'corr-with-variance'
 
-    def apply(self, data):
-        data1 = CorrelationMatrix().apply(data)
-        data2 = VarianceMatrix().apply(data)
-        data2 = data2.reshape((data2.shape[0], 1))
+  def apply(self, data):
+    data1 = CorrelationMatrix().apply(data)
+    data2 = VarianceMatrix().apply(data)
+    data2 = data2.reshape((data2.shape[0], 1))
 
-        return np.hstack((data1, data2))
+    return np.hstack((data1, data2))
+
+def C(x, i, j, Tau, SAMPLE_FREQ):
+    if Tau < 0:
+      return C(x, j, i, abs(Tau), SAMPLE_FREQ)
+    s = 0
+    N = x.shape[1]
+    for t in xrange(0, int(N-Tau*SAMPLE_FREQ-1)):
+      s += x[i][t+Tau*SAMPLE_FREQ] * x[j][Tau*SAMPLE_FREQ]
+    
+    r = s/(N-Tau*SAMPLE_FREQ)
+    if r == 0:
+      r = 0.00001
+    return abs(r) # WTF?
+
+# THIS IS DOG SLOW!!!
+class MaximalCrossCorrelation:
+  def get_name(self):
+    return 'max-cross-corr'
+
+  def apply(self, data):
+    start_time = timeit.default_timer()
+    SAMPLE_FREQ = 400 # FIXME
+    WINDOW_SIZE = 100*SAMPLE_FREQ # FIXME
+    Taus = [-0.5, 0, 0.5] # FIXME
+    max_cc = float('-inf')
+    indices = [c for c in itertools.combinations(range(data.shape[0]), 2)] # all possible pairs of channels
+    data1 = np.zeros((len(indices), data.shape[1]-WINDOW_SIZE-1))
+    for window in xrange(0, data.shape[1]-WINDOW_SIZE-1):
+      for idx, pair in enumerate(indices):
+        print pair
+        i = pair[0]
+        j = pair[1]
+        cur_slice = Slice(window, window+WINDOW_SIZE).apply(data)
+        for Tau in Taus:
+          c_ii = C(cur_slice, i, i, 0, SAMPLE_FREQ)
+          c_jj = C(cur_slice, j, j, 0, SAMPLE_FREQ)
+          cc = abs(C(cur_slice, i, j, Tau, SAMPLE_FREQ) / math.sqrt(c_ii*c_jj))
+          if cc > max_cc:
+            max_cc = cc
+        data1[idx][window] = max_cc
+    print data1
+    elapsed = timeit.default_timer() - start_time
+    print "TOOK: %f" % elapsed
+    
+    return data1
