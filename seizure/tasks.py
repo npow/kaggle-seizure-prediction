@@ -211,6 +211,11 @@ def flatten(data):
     else:
         return data
 
+def train_test_split(X, Y, cv_ratio, shuffle):
+  indices = [(i,j) for (i,j) in cross_validation.KFold(X.shape[0], 2, shuffle=shuffle)]
+  train_indices = indices[0][0]
+  test_indices = indices[0][1]
+  return X[train_indices], X[test_indices], Y[train_indices], Y[test_indices]
 
 # split up preictal and interictal data into training set and cross-validation set
 def prepare_training_data(preictal_data, interictal_data, cv_ratio):
@@ -219,8 +224,8 @@ def prepare_training_data(preictal_data, interictal_data, cv_ratio):
     interictal_X, interictal_y = flatten(interictal_data.X), interictal_data.y
 
     # split up data into training set and cross-validation set for both seizure and early sets
-    preictal_X_train, preictal_X_cv, preictal_y_train, preictal_y_cv = cross_validation.train_test_split(preictal_X, preictal_y, test_size=cv_ratio)
-    interictal_X_train, interictal_X_cv, interictal_y_train, interictal_y_cv = cross_validation.train_test_split(interictal_X, interictal_y, test_size=cv_ratio, random_state=0)
+    preictal_X_train, preictal_X_cv, preictal_y_train, preictal_y_cv = train_test_split(preictal_X, preictal_y, cv_ratio, shuffle=True)
+    interictal_X_train, interictal_X_cv, interictal_y_train, interictal_y_cv = train_test_split(interictal_X, interictal_y, cv_ratio, shuffle=False)
 
     def concat(a, b):
         return np.concatenate((a, b), axis=0)
