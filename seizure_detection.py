@@ -38,7 +38,13 @@ def run_seizure_detection(build_target):
     ts = time.get_millis()
 
     targets = [
-        'Dog_5'
+        'Dog_1',
+        'Dog_2',
+        'Dog_3',
+        'Dog_4',
+        'Dog_5',
+        'Patient_1',
+        'Patient_2'
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
@@ -77,35 +83,32 @@ def run_seizure_detection(build_target):
     ]
     classifiers = [
         # NOTE(mike): you can enable multiple classifiers to run them all and compare results
-        # (RandomForestClassifier(n_estimators=50, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf50mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=150, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf150mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=300, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf300mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=5, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0')
+        (RandomForestClassifier(n_estimators=50, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf50mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=150, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf150mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=300, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf300mss1Bfrs0'),
         (RandomForestClassifier(n_estimators=1000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf1000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=2000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf2000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=4000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf4000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=5000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=6000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf6000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=7000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf7000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=8000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf8000mss1Bfrs0'),
-        # (RandomForestClassifier(n_estimators=9000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf9000mss1Bfrs0'),
-        # (LinearSVC(C=0.1), 'linearsvc_c1'),
-        # (LinearSVC(C=1), 'linearsvc_c0.1'),
-        # (LinearSVC(C=10), 'linearsvc_c10'),
-        # (LinearSVC(C=100), 'linearsvc_c100'),
-        # (LinearSVC(C=1000), 'linearsvc_c1000'),
-        # (LinearSVC(C=10000), 'linearsvc_c10000'),
-        # (LinearSVC(C=100000), 'linearsvc_c100000'),
-        # (LinearSVC(C=0.1, class_weight='auto'), 'linearsvc_c1_cw'),
-        (LinearSVC(C=1, class_weight='auto'), 'linearsvc_c0.1_cw'),
-        # (LinearSVC(C=10, class_weight='auto'), 'linearsvc_c10_cw'),
-        # (LinearSVC(C=100, class_weight='auto'), 'linearsvc_c100_cw'),
-        # (LinearSVC(C=1000, class_weight='auto'), 'linearsvc_c1000_cw'),
-        # (LinearSVC(C=10000, class_weight='auto'), 'linearsvc_c10000_cw'),
-        # (LinearSVC(C=100000, class_weight='auto'), 'linearsvc_c100000_cw')
+        (RandomForestClassifier(n_estimators=2000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf2000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=4000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf4000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=5000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=6000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf6000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=7000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf7000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=8000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf8000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=10000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf10000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=9000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf9000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=11000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf11000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=12000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf12000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=13000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf13000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=14000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf14000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=15000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf15000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=16000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf16000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=17000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf17000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=18000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf18000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=19000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf19000mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=20000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf20000mss1Bfrs0'),
+        #(LogisticRegression(), 'logistic_regression'),
+        #(LinearSVC(C=0.1), 'linearsvc_c0.1'),
+        #(LinearSVC(C=1), 'linearsvc_c1'),
     ]
     cv_ratio = 0.5
 
