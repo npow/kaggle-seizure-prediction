@@ -552,13 +552,21 @@ class FFTWithTimeFreqCorrelation:
 
 
 class CorrelationWithVariance:
+  def __init__(self, with_eigen):
+    self.with_eigen = with_eigen
+
   def get_name(self):
-    return 'corr-with-variance'
+    return 'corr-with-variance%s' % ('-with-eigen' if self.with_eigen else '')
 
   def apply(self, data):
     data1 = CorrelationMatrix().apply(data)
     data2 = VarianceMatrix().apply(data)
     data2 = data2.reshape((data2.shape[0], 1))
+
+    if self.with_eigen:
+      data3 = Eigenvalues().apply(data1)
+      data3 = data3.reshape((data3.shape[0], 1))
+      return np.hstack((data1, data2, data3))
 
     return np.hstack((data1, data2))
 
