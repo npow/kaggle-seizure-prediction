@@ -224,7 +224,7 @@ def prepare_training_data(preictal_data, interictal_data, cv_ratio):
     interictal_X, interictal_y = flatten(interictal_data.X), interictal_data.y
 
     # split up data into training set and cross-validation set for both seizure and early sets
-    preictal_X_train, preictal_X_cv, preictal_y_train, preictal_y_cv = train_test_split(preictal_X, preictal_y, cv_ratio, shuffle=True)
+    preictal_X_train, preictal_X_cv, preictal_y_train, preictal_y_cv = train_test_split(preictal_X, preictal_y, cv_ratio, shuffle=False)
     interictal_X_train, interictal_X_cv, interictal_y_train, interictal_y_cv = train_test_split(interictal_X, interictal_y, cv_ratio, shuffle=False)
 
     def concat(a, b):
