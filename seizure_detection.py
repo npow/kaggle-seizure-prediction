@@ -38,8 +38,8 @@ def run_seizure_detection(build_target):
     ts = time.get_millis()
 
     targets = [
-        'Dog_1',
-        'Dog_2',
+        #'Dog_1',
+        #'Dog_2',
         #'Dog_3',
         #'Dog_4',
         'Dog_5',
@@ -48,10 +48,10 @@ def run_seizure_detection(build_target):
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
-        Pipeline(gen_preictal=False, pipeline=[CorrelationWithVariance(with_eigen=True)]),
-        Pipeline(gen_preictal=False, pipeline=[CorrelationWithVariance(with_eigen=False)]),
-        Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance(with_eigen=True)]),
-        Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance(with_eigen=False)]),
+        Pipeline(gen_preictal=False, pipeline=[MaximalCrossCorrelation()]),
+        #Pipeline(gen_preictal=False, pipeline=[CorrelationWithVariance(with_eigen=False)]),
+        #Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance(with_eigen=True)]),
+        #Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance(with_eigen=False)]),
         #Pipeline(gen_preictal=True,  pipeline=[FFT(), Slice(1, 48), Magnitude(), Log10()]),
         #Pipeline(gen_preictal=False, pipeline=[MFCC()]),
         #Pipeline(gen_preictal=False, pipeline=[CorrelationWithVariance()]),

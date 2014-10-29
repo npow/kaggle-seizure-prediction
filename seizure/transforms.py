@@ -2,6 +2,7 @@ import itertools
 import math
 import numpy as np
 import scipy
+from obspy.signal.cross_correlation import xcorr
 from scipy import signal
 from scipy.signal import resample, hann
 from scipy.sparse import hstack
@@ -583,34 +584,19 @@ def C(x, i, j, Tau, SAMPLE_FREQ):
       r = 0.00001
     return abs(r) # WTF?
 
-# THIS IS DOG SLOW!!!
 class MaximalCrossCorrelation:
   def get_name(self):
     return 'max-cross-corr'
 
   def apply(self, data):
-    start_time = timeit.default_timer()
-    SAMPLE_FREQ = 400 # FIXME
-    WINDOW_SIZE = 100*SAMPLE_FREQ # FIXME
-    Taus = [-0.5, 0, 0.5] # FIXME
-    max_cc = float('-inf')
+    L = []
     indices = [c for c in itertools.combinations(range(data.shape[0]), 2)] # all possible pairs of channels
-    data1 = np.zeros((len(indices), data.shape[1]-WINDOW_SIZE-1))
-    for window in xrange(0, data.shape[1]-WINDOW_SIZE-1):
-      for idx, pair in enumerate(indices):
-        print pair
-        i = pair[0]
-        j = pair[1]
-        cur_slice = Slice(window, window+WINDOW_SIZE).apply(data)
-        for Tau in Taus:
-          c_ii = C(cur_slice, i, i, 0, SAMPLE_FREQ)
-          c_jj = C(cur_slice, j, j, 0, SAMPLE_FREQ)
-          cc = abs(C(cur_slice, i, j, Tau, SAMPLE_FREQ) / math.sqrt(c_ii*c_jj))
-          if cc > max_cc:
-            max_cc = cc
-        data1[idx][window] = max_cc
-    print data1
-    elapsed = timeit.default_timer() - start_time
-    print "TOOK: %f" % elapsed
+    for idx, pair in enumerate(indices):
+      i = pair[0]
+      j = pair[1]
+      _, _, xc = xcorr(data[i].T, data[j].T, 100, full_xcorr=True)
+      xc = xc.reshape((1, xc.shape[0]))
+      L.append(xc)
+    data1 = np.concatenate(L, axis=0)
     
     return data1
