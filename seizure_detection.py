@@ -48,7 +48,7 @@ def run_seizure_detection(build_target):
     ]
     pipelines = [
         # NOTE(mike): you can enable multiple pipelines to run them all and compare results
-        Pipeline(gen_preictal=False, pipeline=[MaximalCrossCorrelation()]),
+        Pipeline(gen_preictal=False, pipeline=[Resample(400), MaximalCrossCorrelation()]),
         #Pipeline(gen_preictal=False, pipeline=[CorrelationWithVariance(with_eigen=False)]),
         #Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance(with_eigen=True)]),
         #Pipeline(gen_preictal=True, pipeline=[CorrelationWithVariance(with_eigen=False)]),
@@ -89,12 +89,12 @@ def run_seizure_detection(build_target):
     ]
     classifiers = [
         # NOTE(mike): you can enable multiple classifiers to run them all and compare results
-        #(RandomForestClassifier(n_estimators=50, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf50mss1Bfrs0'),
+        (RandomForestClassifier(n_estimators=50, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf50mss1Bfrs0'),
         #(RandomForestClassifier(n_estimators=150, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf150mss1Bfrs0'),
         #(RandomForestClassifier(n_estimators=300, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf300mss1Bfrs0'),
-        (RandomForestClassifier(n_estimators=1000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf1000mss1Bfrs0'),
+        #(RandomForestClassifier(n_estimators=1000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf1000mss1Bfrs0'),
         #(RandomForestClassifier(n_estimators=2000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf2000mss1Bfrs0'),
-        (RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
+        #(RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf3000mss1Bfrs0'),
         #(RandomForestClassifier(n_estimators=4000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf4000mss1Bfrs0'),
         #(RandomForestClassifier(n_estimators=5000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf5000mss1Bfrs0'),
         #(RandomForestClassifier(n_estimators=6000, min_samples_split=1, bootstrap=False, n_jobs=4, random_state=0), 'rf6000mss1Bfrs0'),

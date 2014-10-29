@@ -594,7 +594,7 @@ class MaximalCrossCorrelation:
     for idx, pair in enumerate(indices):
       i = pair[0]
       j = pair[1]
-      _, _, xc = xcorr(data[i].T, data[j].T, 100, full_xcorr=True)
+      _, _, xc = xcorr(data[i].T, data[j].T, 10, full_xcorr=True)
       xc = xc.reshape((1, xc.shape[0]))
       L.append(xc)
     data1 = np.concatenate(L, axis=0)
