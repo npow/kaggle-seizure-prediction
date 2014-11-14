@@ -85,6 +85,8 @@ class CrossValidationScoreTask(Task):
     def load_data(self):
         data = TrainingDataTask(self.task_core).run()
         classifier_data = train_classifier(self.task_core.classifier, data, normalize=self.task_core.normalize)
+        print "*" * 80
+        print classifier_data
         del classifier_data['classifier'] # save disk space
         return classifier_data
 
@@ -317,12 +319,20 @@ def train_classifier(classifier, data, use_all_data=False, normalize=False):
 # use the classifier and make predictions on the test data
 def make_predictions(target, X_test, y_classes, classifier_data):
     classifier = classifier_data.classifier
-    predictions= classifier.predict_proba(X_test)
+    use_proba = 'predict_proba' in dir(classifier)
+    if use_proba:
+        predictions = classifier.predict_proba(X_test)
+    else:
+        predictions = classifier.predict(X_test)
 
     lines = []
     for i in range(len(predictions)):
-        p = predictions[i][1]
-        lines.append('%s_test_segment_%04d.mat,%f' % (target, i+1, p))
+        if use_proba:
+            p = predictions[i][1]
+            lines.append('%s_test_segment_%04d.mat,%f' % (target, i+1, p))
+        else:
+            p = predictions[i]
+            lines.append('%s_test_segment_%04d.mat,%d' % (target, i+1, p))
 
     return {
         'data': '\n'.join(lines)
