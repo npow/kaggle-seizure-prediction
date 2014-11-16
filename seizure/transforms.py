@@ -584,6 +584,21 @@ def C(x, i, j, Tau, SAMPLE_FREQ):
       r = 0.00001
     return abs(r) # WTF?
 
+class ChannelVariance:
+  def get_name(self):
+    return 'channel-var'
+
+  def apply(self, data):
+    L = []
+    indices = [c for c in itertools.combinations(range(data.shape[0]), 2)] # all possible pairs of channels
+    for idx, pair in enumerate(indices):
+      i = pair[0]
+      j = pair[1]
+      axis = data.ndim - 1
+      L.append(np.var(np.vstack([data[i].T, data[j].T]), axis=axis))
+    data1 = np.concatenate(L, axis=0)
+    return data1
+
 class MaximalCrossCorrelation:
   def get_name(self):
     return 'max-cross-corr'
@@ -594,7 +609,7 @@ class MaximalCrossCorrelation:
     for idx, pair in enumerate(indices):
       i = pair[0]
       j = pair[1]
-      _, _, xc = xcorr(data[i].T, data[j].T, 10, full_xcorr=True)
+      _, _, xc = xcorr(data[i].T, data[j].T, 100, full_xcorr=True)
       xc = xc.reshape((1, xc.shape[0]))
       L.append(xc)
     data1 = np.concatenate(L, axis=0)
