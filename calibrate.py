@@ -1,8 +1,10 @@
 import numpy as np
 from common.data import CachedDataLoader
+from seizure.transforms import *
 from sklearn.cross_validation import KFold
 from sklearn.isotonic import *
 from sklearn.linear_model import *
+from sklearn.preprocessing import *
 from sklearn.svm import *
 
 cache_dir = 'data-cache'
@@ -69,7 +71,11 @@ for i in range(len(TRAIN_FILES)):
     print "x_test: ", x_test.shape
     print "y_test: ", y_test.shape
 
-    clf = SVC(C=1000, probability=True)
+    scaler = StandardScaler()
+    x_train = scaler.fit_transform(x_train, y_train)
+    x_test = scaler.transform(x_test)
+
+    clf = SVC(C=10000, probability=True)
     clf.fit(x_train, y_train)
     train_probas = clf.predict_proba(x_test)[:,1]
     TRAIN_PROBAS.append(train_probas)
@@ -81,7 +87,11 @@ for i in range(len(TRAIN_FILES)):
     X_test = flatten(test_data.__dict__['X'])
     print "X_test: ", X_test.shape
 
-    svc = SVC(C=1000, probability=True)
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train, Y_train)
+    X_test = scaler.transform(X_test)
+
+    svc = SVC(C=10000, probability=True)
     svc.fit(X_train, Y_train)
     test_probas = svc.predict_proba(X_test)[:,1]
     print "test_probas: ", test_probas.shape
@@ -105,8 +115,14 @@ ir.fit(TRAIN_PROBAS, TRAIN_LABELS)
 calibrated_probas = ir.transform(TEST_PROBAS)
 print "calibrated_probas: ", calibrated_probas.shape
 
-f = open('combined_ir_c1000.csv', 'wb')
+f = open('combined_ir_c10000.csv', 'wb')
 f.write('clip,preictal\n')
 for idx, p in enumerate(calibrated_probas):
+    f.write('%s,%f\n' % (FILENAMES[idx], p))
+f.close()
+
+f = open('uncalibrated_c10000.csv', 'wb')
+f.write('clip,preictal\n')
+for idx, p in enumerate(TEST_PROBAS):
     f.write('%s,%f\n' % (FILENAMES[idx], p))
 f.close()
